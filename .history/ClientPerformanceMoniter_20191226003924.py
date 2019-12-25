@@ -2,6 +2,7 @@
 from signal import signal, SIGTERM, SIGINT
 from public import publicfunction as util
 from script import get_cpu_mem_info as info
+# from script import ShowData
 from collections import deque
 import time
 import datetime
@@ -36,6 +37,9 @@ class ClientPerformanceMoniter(object):
         
         # 开启新线程获取cpu内存值
         _thread.start_new_thread(self._GetPerformanceDataThread, ())
+
+        # dataShow = ShowData.ShowData()
+        # dataShow.InitRealtimeFig()
         count = 0
         # 创建一个workbook 设置编码
         workbook = xlwt.Workbook(encoding = 'utf-8')
@@ -45,13 +49,15 @@ class ClientPerformanceMoniter(object):
                 # time.sleep(0.5)
                 continue
             # show x axis
+            # dataShow.SetXValue(count)
             # cpu use rate data
             if not len(self._CpuUseRateQueue) == 0:
                 self._CurrentCpuUseRate = self._CpuUseRateQueue.popleft()
+                # dataShow.SetCpuYValue(float(self._CurrentCpuUseRate))
             # Mem use
             if not len(self._MemUseQueue) == 0:
                 self._CurrentMemUse = self._MemUseQueue.popleft()
-
+                # dataShow.SetMemYValue(float(self._CurrentMemUse))
             now = datetime.datetime.now()
             now = now.strftime("%H:%M:%S")
             
@@ -70,6 +76,8 @@ class ClientPerformanceMoniter(object):
             worksheet.write(count+1,1, label = self._CurrentCpuUseRate)
             worksheet.write(count+1,2, label = self._CurrentMemUse)
             workbook.save('./Data/per_{}.xlsx'.format(self.devicesName))
+          
+            # dataShow.Show()
             # time.sleep(0.2)
             count += 1
 

@@ -44,19 +44,12 @@ class ClientPerformanceMoniter(object):
                 # print('the data queue is empty!')
                 # time.sleep(0.5)
                 continue
-            # show x axis
-            # cpu use rate data
-            if not len(self._CpuUseRateQueue) == 0:
-                self._CurrentCpuUseRate = self._CpuUseRateQueue.popleft()
-            # Mem use
-            if not len(self._MemUseQueue) == 0:
-                self._CurrentMemUse = self._MemUseQueue.popleft()
 
             now = datetime.datetime.now()
             now = now.strftime("%H:%M:%S")
             
             if count%20 == 0:
-                print('-----------------------------{}'.format(count+1))
+                print('-----------------------------{}'.format(count))
             if count == 0:
                 # 创建一个worksheet
                 worksheet = workbook.add_sheet(self.devicesName)
@@ -66,10 +59,11 @@ class ClientPerformanceMoniter(object):
            
             # 入excel
             # 参数对应 行, 列, 值
+            print(self.devicesName)
             worksheet.write(count+1,0, label = str(now))
             worksheet.write(count+1,1, label = self._CurrentCpuUseRate)
             worksheet.write(count+1,2, label = self._CurrentMemUse)
-            workbook.save('./Data/per_{}.xlsx'.format(self.devicesName))
+            workbook.save('./Data/per_{}.xlsx'.format(self.devicesName.decode()))
             # time.sleep(0.2)
             count += 1
 

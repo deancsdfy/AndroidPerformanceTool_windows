@@ -13,8 +13,13 @@ print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
 def top():
-    cpu = getCpuInfo()
-    mem = getMemInfo()
+    pid=get_pid()
+    print(pid)
+    top_info = util.shell("top -n 1 | grep %d" %(int(pid))).stdout.readlines()
+    for x in top_info:
+        temp_list = x.split()
+        cpu=float(temp_list[8])
+        mem=float(temp_list[9])
     return (cpu,mem)
 
 def getCpuNums():
@@ -24,15 +29,20 @@ def getCpuNums():
 
 def getCpuInfo():
     pid = get_pid()
+    # print(pid)
     cpunums=getCpuNums()
     top_info = util.shell('top -n 1 | grep %d' % (int(pid))).stdout.readlines()
+    print(top_info)
     if(len(top_info)!=0):
         for x in top_info:
+            print(x)
             temp_list = x.split()
-            if getSDKVersion() <= 23:
-                cpu = round(float(temp_list[2].decode().split('%')[0]),2)
-                # print(cpu)
+            print(temp_list)
+            if getSDKVersion() == '23':
+                cpu = round(float(str(temp_list[2])[2:-2]),2)
+                print(cpu)
             elif (temp_list[8]!=" "):
+                print(float(temp_list[8]))
                 cpu = round(float(temp_list[8])/cpunums,2)
                 # print(cpu)
             else:
@@ -43,12 +53,13 @@ def getCpuInfo():
 
 def getMemInfo():
     pid=get_pid()
+    # print(pid)
     top_info = util.shell('top -n 1 | grep %d' % (int(pid))).stdout.readlines()
     if getSDKVersion() <= 23:
         if(len(top_info)!=0):
             for x in top_info:
                 temp_list = x.split()
-                mem = round(float(temp_list[6].decode()[0:-1])/1024,1)
+                mem = round(float(str(temp_list[6])[2:-2])/1024,1)
                 # print(mem)
     else:
         mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
@@ -60,12 +71,12 @@ def getMemInfo():
 
 #获取机型名称
 def getDevicesName():
-    devicesName = util.shell('getprop ro.product.model').stdout.read().decode().strip()
+    devicesName = util.shell('getprop ro.product.model').stdout.read().decode()
     return devicesName
 
-# 获取系统SDK版本
+# 获取系统版本
 def getSDKVersion():
-    SDKVersion = util.shell('getprop ro.build.version.sdk').stdout.read().decode().strip()
+    SDKVersion = util.shell('getprop ro.build.version.sdk').stdout.read().decode()
     return int(SDKVersion)
 
 #获取pid
@@ -74,6 +85,9 @@ def get_pid():
     pattern = re.compile(r"[a-zA-Z0-9\.]+=.[0-9\.]+")
     package = util.shell('dumpsys activity top| grep ACTIVITY').stdout.read()
     pid = pattern.findall(package.decode())[-1].split('=')[1]
+    # pid_info = util.shell('ps| grep %s' %(package_name)).stdout.readlines()
+    # print(pid_info)
+    # pid = pid_info[0].split()[1]
     # print('pid为: %s' %(pid))
     return pid
 
@@ -94,8 +108,8 @@ def get_flow_send():
     print(flow)
 
 if __name__ == "__main__":
+    print("Starting get top information...")
     #get_flow_send()
     #top()
-    # getCpuInfo()
+    getCpuInfo()
     # getMemInfo()
-    getDevicesName()

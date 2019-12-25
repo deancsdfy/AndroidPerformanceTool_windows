@@ -49,7 +49,7 @@ def getMemInfo():
             for x in top_info:
                 temp_list = x.split()
                 mem = round(float(temp_list[6].decode()[0:-1])/1024,1)
-                # print(mem)
+                print(mem)
     else:
         mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
         for x in mem_info:
