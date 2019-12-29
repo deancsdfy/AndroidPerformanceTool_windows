@@ -2,6 +2,7 @@
 import os
 import subprocess
 import re
+from timecount import TimeCount
 serialno_num=''
 
 #获取手机
@@ -20,6 +21,7 @@ def shell(args):
     cmd = 'adb shell \"%s\"' %( str(args))
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+@TimeCount
 def get_current_packagename():
     #正则匹配出package和activity
     pattern = re.compile(r"[a-zA-Z0-9\.]+/.[a-zA-Z0-9\.]+")

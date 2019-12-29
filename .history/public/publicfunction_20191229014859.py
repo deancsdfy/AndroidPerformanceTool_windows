@@ -2,6 +2,7 @@
 import os
 import subprocess
 import re
+from timecount import TimeCount
 serialno_num=''
 
 #获取手机
@@ -20,11 +21,13 @@ def shell(args):
     cmd = 'adb shell \"%s\"' %( str(args))
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+@TimeCount
 def get_current_packagename():
     #正则匹配出package和activity
     pattern = re.compile(r"[a-zA-Z0-9\.]+/.[a-zA-Z0-9\.]+")
     package = shell('dumpsys activity top| grep ACTIVITY').stdout.read()
     #用-1，是因为部分机型上，还会返回一些系统进程和包，比如小米8
+    print(pattern.findall(package.decode())[-1].split('/')[0])
     return pattern.findall(package.decode())[-1].split('/')[0]
 
 def get_current_activity():

@@ -12,6 +12,7 @@ package_name = util.get_current_packagename()
 print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
+@TimeCount
 def top():
     pid = get_pid()
     if getSDKVersion() <= 23:
@@ -21,6 +22,8 @@ def top():
                 temp_list = x.split()
                 cpu = round(float(temp_list[2].decode().split('%')[0]),2)
                 mem = round(float(temp_list[6].decode()[0:-1])/1024,1)
+                print(cpu)
+                print(mem)                
                 return (cpu,mem)
         else:
             return 0.0
@@ -42,7 +45,7 @@ def getCpuInfo():
         for x in top_info:
             temp_list = x.split()
             cpu = round(float(temp_list[8])/cpunums,2)
-            # print(cpu)
+            print(cpu)
             return cpu
     else:
         return 0.0

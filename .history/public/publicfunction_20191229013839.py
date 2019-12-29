@@ -2,6 +2,7 @@
 import os
 import subprocess
 import re
+from timecount import TimeCount
 serialno_num=''
 
 #获取手机
@@ -32,7 +33,8 @@ def get_current_activity():
     pattern = re.compile(r"[a-zA-Z0-9\.]+/.[a-zA-Z0-9\.]+")
     package = shell('dumpsys activity top| grep ACTIVITY').stdout.read()
     return pattern.findall(package.decode())[-1].split('/')[1]
-
+    
+@TimeCount
 if __name__ == "__main__":
     get_current_activity()
     get_current_packagename()

@@ -1,7 +1,7 @@
 #! python3
 #coding=utf-8
 
-import sys,os,re
+import sys,os,re,threading
 sys.path.append('.')
 from public import publicfunction as util
 from public.timecount import TimeCount
@@ -12,6 +12,7 @@ package_name = util.get_current_packagename()
 print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
+@TimeCount
 def top():
     pid = get_pid()
     if getSDKVersion() <= 23:
@@ -26,8 +27,11 @@ def top():
             return 0.0
     else:
         cpu = getCpuInfo()
+        # mem_threading = threading.Thread(target=getMemInfo)
+        # mem_threading.start()
+        # mem_threading.join()
         mem = getMemInfo()
-    return (cpu,mem)
+    return (cpu)
 
 def getCpuNums():
     num_info = util.shell('cat /proc/cpuinfo|grep processor').stdout.readlines()

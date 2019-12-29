@@ -12,6 +12,7 @@ package_name = util.get_current_packagename()
 print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
+@TimeCount
 def top():
     pid = get_pid()
     if getSDKVersion() <= 23:
@@ -34,6 +35,7 @@ def getCpuNums():
     # print("cpu nums is %d" %(len(num_info)))
     return len(num_info)
 
+@TimeCount
 def getCpuInfo():
     pid = get_pid()
     cpunums=getCpuNums()
@@ -42,18 +44,19 @@ def getCpuInfo():
         for x in top_info:
             temp_list = x.split()
             cpu = round(float(temp_list[8])/cpunums,2)
-            # print(cpu)
+            print(cpu)
             return cpu
     else:
         return 0.0
 
+@TimeCount
 def getMemInfo():
     pid=get_pid()
     mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
     for x in mem_info:
         temp_list = x.split()
         mem=round(float(temp_list[1])/1024,1)
-        # print(mem)
+        print(mem)
     return mem
 
 #获取机型名称

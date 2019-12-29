@@ -13,6 +13,15 @@ class ClientPerformanceMoniter(object):
         self._CurrentCpuUseRate = ""
         self._CurrentMemUse = ""
 
+    def _GetPerformanceDataThread(self):
+        while True:
+            top_info = info.top()
+            cpuRate = top_info[0]
+            mem = top_info[1]
+            print("cpu is {}% mem is {}M".format(cpuRate, mem))
+            self._CpuUseRateQueue.appendleft(cpuRate)
+            self._MemUseQueue.appendleft(mem)
+
     def StartMonitor(self):
         count = 0
         # 创建一个workbook 设置编码

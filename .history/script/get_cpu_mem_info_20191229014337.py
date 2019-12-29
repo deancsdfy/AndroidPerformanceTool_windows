@@ -2,9 +2,9 @@
 #coding=utf-8
 
 import sys,os,re
+from public.timecount import TimeCount
 sys.path.append('.')
 from public import publicfunction as util
-from public.timecount import TimeCount
 PATH = lambda p: os.path.abspath(p)
 
 #获取当前应用包名
@@ -13,20 +13,8 @@ print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
 def top():
-    pid = get_pid()
-    if getSDKVersion() <= 23:
-        top_info = util.shell('top -n 1 | grep %d' % (int(pid))).stdout.readlines()
-        if(len(top_info)!=0):
-            for x in top_info:
-                temp_list = x.split()
-                cpu = round(float(temp_list[2].decode().split('%')[0]),2)
-                mem = round(float(temp_list[6].decode()[0:-1])/1024,1)
-                return (cpu,mem)
-        else:
-            return 0.0
-    else:
-        cpu = getCpuInfo()
-        mem = getMemInfo()
+    cpu = getCpuInfo()
+    mem = getMemInfo()
     return (cpu,mem)
 
 def getCpuNums():
@@ -41,19 +29,33 @@ def getCpuInfo():
     if(len(top_info)!=0):
         for x in top_info:
             temp_list = x.split()
-            cpu = round(float(temp_list[8])/cpunums,2)
-            # print(cpu)
+            if getSDKVersion() <= 23:
+                cpu = round(float(temp_list[2].decode().split('%')[0]),2)
+                # print(cpu)
+            elif (temp_list[8]!=" "):
+                cpu = round(float(temp_list[8])/cpunums,2)
+                # print(cpu)
+            else:
+                cpu = 0.0
             return cpu
     else:
         return 0.0
 
 def getMemInfo():
     pid=get_pid()
-    mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
-    for x in mem_info:
-        temp_list = x.split()
-        mem=round(float(temp_list[1])/1024,1)
-        # print(mem)
+    top_info = util.shell('top -n 1 | grep %d' % (int(pid))).stdout.readlines()
+    if getSDKVersion() <= 23:
+        if(len(top_info)!=0):
+            for x in top_info:
+                temp_list = x.split()
+                mem = round(float(temp_list[6].decode()[0:-1])/1024,1)
+                # print(mem)
+    else:
+        mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
+        for x in mem_info:
+            temp_list = x.split()
+            mem=round(float(temp_list[1])/1024,1)
+            # print(mem)
     return mem
 
 #获取机型名称
@@ -93,6 +95,7 @@ def get_flow_send():
 
 if __name__ == "__main__":
     #get_flow_send()
-    top()
+    #top()
     # getCpuInfo()
     # getMemInfo()
+    getDevicesName()

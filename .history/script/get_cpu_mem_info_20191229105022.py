@@ -1,7 +1,7 @@
 #! python3
 #coding=utf-8
 
-import sys,os,re
+import sys,os,re,threading
 sys.path.append('.')
 from public import publicfunction as util
 from public.timecount import TimeCount
@@ -12,6 +12,7 @@ package_name = util.get_current_packagename()
 print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
+@TimeCount
 def top():
     pid = get_pid()
     if getSDKVersion() <= 23:
@@ -25,8 +26,14 @@ def top():
         else:
             return 0.0
     else:
+        mem_threading = threading.Thread(target=getMemInfo())
+        mem_threading.start()
+        mem_threading.join()
         cpu = getCpuInfo()
-        mem = getMemInfo()
+        mem_threading = threading.Thread(target=getMemInfo())
+        mem_threading.start()
+        mem_threading.join()
+        # mem = getMemInfo()
     return (cpu,mem)
 
 def getCpuNums():
@@ -34,6 +41,7 @@ def getCpuNums():
     # print("cpu nums is %d" %(len(num_info)))
     return len(num_info)
 
+@TimeCount
 def getCpuInfo():
     pid = get_pid()
     cpunums=getCpuNums()
@@ -42,18 +50,19 @@ def getCpuInfo():
         for x in top_info:
             temp_list = x.split()
             cpu = round(float(temp_list[8])/cpunums,2)
-            # print(cpu)
+            print(cpu)
             return cpu
     else:
         return 0.0
 
+@TimeCount
 def getMemInfo():
     pid=get_pid()
     mem_info = util.shell('dumpsys meminfo %d |grep TOTAL:' %(int(pid))).stdout.readlines()
     for x in mem_info:
         temp_list = x.split()
         mem=round(float(temp_list[1])/1024,1)
-        # print(mem)
+        print(mem)
     return mem
 
 #获取机型名称

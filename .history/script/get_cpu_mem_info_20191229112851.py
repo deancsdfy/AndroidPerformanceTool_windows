@@ -1,7 +1,7 @@
 #! python3
 #coding=utf-8
 
-import sys,os,re
+import sys,os,re,threading
 sys.path.append('.')
 from public import publicfunction as util
 from public.timecount import TimeCount
@@ -12,6 +12,7 @@ package_name = util.get_current_packagename()
 print('本次测试APP为:%s' %(package_name))
 
 #获取men cpu 占用情况
+@TimeCount
 def top():
     pid = get_pid()
     if getSDKVersion() <= 23:
